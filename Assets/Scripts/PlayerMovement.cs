@@ -10,6 +10,7 @@ public class PlayerMovement : NetworkBehaviour
     public float runSpeed = 40f;
 
     float horizontalMove = 0f;
+    float verticalVelocity = 0f;
     bool jump = false;
     bool crouch = false;
 
@@ -22,19 +23,22 @@ public class PlayerMovement : NetworkBehaviour
         }
 
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+        verticalVelocity = GetComponent<Rigidbody2D>().velocity.y;
 
-        animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
+        animator.SetFloat("Horizontal Speed", Mathf.Abs(horizontalMove));
+        animator.SetFloat("Vertical Velocity", verticalVelocity);
+        
+        if (Input.GetButtonDown("Crouch"))
+        {
+            crouch = true;
+        }
 
-        if (Input.GetButtonDown("Jump"))
+        else if(Input.GetButtonDown("Jump"))
         {
             jump = true;
             animator.SetBool("IsJumping", true);
         }
 
-        if (Input.GetButtonDown("Crouch"))
-        {
-            crouch = true;
-        }
         else if (Input.GetButtonUp("Crouch"))
         {
             crouch = false;
@@ -59,6 +63,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             return;
         }
+
         // Move our character
         controller.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
     }
